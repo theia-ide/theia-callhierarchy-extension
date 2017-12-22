@@ -1,0 +1,41 @@
+{
+  "name": "@theia/callhierarchy",
+  "description": "Theia - Call Hierarchy Extension",
+  "keywords": [
+    "theia-extension"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "@theia/core": "^0.3.0",
+    "@theia/languages": "^0.3.1",
+    "@theia/editor": "^0.3.1",
+    "vscode-base-languageclient": "^0.0.1-alpha.3",
+    "vscode-languageserver-types": "^3.4.0",
+    "ts-md5": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.10",
+    "@types/mocha": "^2.2.44",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "rimraf": "^2.6.2",
+    "ts-node": "^4.0.1",
+    "typescript": "latest"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "mocha -t 20000ms --require ts-node/register --require reflect-metadata/Reflect --watch-extensions ts \"./src/**/*.*spec.ts\""
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/callhierarchy-frontend-module"
+    }
+  ]
+}

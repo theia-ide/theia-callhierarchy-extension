@@ -1,5 +1,6 @@
-# Hello World Extension Example
-The example of how to build the Theia-based applications with the theia-callhierarchy.
+# Theia - Call Hierarchy Extension
+
+The example of how to build a Theia-based application with the Call Hierarchy extension.
 
 ## Getting started
 

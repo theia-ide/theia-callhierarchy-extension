@@ -12,7 +12,7 @@ import { DocumentSymbolParams, TextDocumentIdentifier, SymbolInformation, Locati
 import * as utils from './utils';
 import { Definition, Caller } from './callhierarchy';
 import { CallHierarchyService } from './callhierarchy-service';
-import { LanguageClientProvider } from './languageclient-provider';
+import { LanguageClientProvider } from './language-client-provider';
 
 
 @injectable()
@@ -23,14 +23,24 @@ export class TypeScriptCallHierarchyService implements CallHierarchyService {
 
     constructor(
         @inject(LanguageClientProvider) protected readonly languageClientProvider: LanguageClientProvider,
-    ) {
-        languageClientProvider.getLanguageClient(this.languageId).then(client => this.languageClient = client);
+    ) { }
+
+    protected async getLanguageClient(): Promise<ILanguageClient | undefined> {
+        if (!this.languageClient) {
+            try {
+                this.languageClient = await this.languageClientProvider.getLanguageClient(this.languageId);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        return this.languageClient
     }
 
     /**
      * Returns root definition of caller hierarchy.
      */
     public async getRootDefinition(location: Location): Promise<Definition | undefined> {
+        this.languageClient =  await this.getLanguageClient();
         if (!this.languageClient) {
             return;
         }
@@ -43,6 +53,7 @@ export class TypeScriptCallHierarchyService implements CallHierarchyService {
      * Returns next level of caller definitions.
      */
     public async getCallers(definition: Definition): Promise<Caller[] | undefined> {
+        this.languageClient =  await this.getLanguageClient();
         if (!this.languageClient) {
             return;
         }

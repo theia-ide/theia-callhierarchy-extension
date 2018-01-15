@@ -7,14 +7,16 @@
 
 import { injectable, inject, named } from "inversify";
 import { ContributionProvider } from '@theia/core/lib/common';
-import { LanguageClientContribution, ILanguageClient } from '@theia/languages/lib/browser';
+import { LanguageClientContribution } from '@theia/languages/lib/browser/language-client-contribution';
+import { ILanguageClient } from '@theia/languages/lib/common/languageclient-services';
+import { LanguageClientProvider } from './language-client-provider';
 
 @injectable()
-export class LanguageClientProvider {
+export class LanguageClientProviderImpl implements LanguageClientProvider {
 
     constructor(
         @inject(ContributionProvider) @named(LanguageClientContribution)
-        protected readonly contributions: ContributionProvider<LanguageClientContribution>,
+        private readonly contributions: ContributionProvider<LanguageClientContribution>,
     ) { }
 
     async getLanguageClient(languageId: string): Promise<ILanguageClient | undefined> {

@@ -6,7 +6,8 @@
  */
 
 import { injectable, inject } from "inversify";
-import { CommandContribution, CommandRegistry, Command, MenuContribution, MenuModelRegistry, KeybindingContribution, KeybindingRegistry, CommandHandler, KeyCode, Key, Modifier } from "@theia/core/lib/common";
+import { CommandContribution, CommandRegistry, Command, MenuContribution, MenuModelRegistry, KeybindingContribution, 
+    KeybindingRegistry, CommandHandler, KeyCode, Key, Modifier } from "@theia/core/lib/common";
 import { WidgetManager, FrontendApplicationContribution, FrontendApplication } from '@theia/core/lib/browser';
 import { EDITOR_CONTEXT_MENU } from '@theia/editor/lib/browser';
 import { CallHierarchyService } from './callhierarchy-service';

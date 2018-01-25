@@ -10,20 +10,20 @@
     "src"
   ],
   "dependencies": {
-    "@theia/core": "^0.3.0",
-    "@theia/languages": "^0.3.1",
-    "@theia/editor": "^0.3.1",
+    "@theia/core": "^0.3.2",
+    "@theia/languages": "^0.3.2",
+    "@theia/editor": "^0.3.2",
     "vscode-base-languageclient": "^0.0.1-alpha.3",
     "vscode-languageserver-types": "^3.4.0",
     "ts-md5": "^1.2.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.10",
+    "@types/chai": "^4.1.2",
     "@types/mocha": "^2.2.44",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
     "rimraf": "^2.6.2",
-    "ts-node": "^4.0.1",
+    "ts-node": "^4.1.0",
     "typescript": "^2.6.2"
   },
   "scripts": {

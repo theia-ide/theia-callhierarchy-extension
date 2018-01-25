@@ -6,13 +6,12 @@
  */
 
 import { injectable, inject } from "inversify";
-import { CommandContribution, CommandRegistry, Command, MenuContribution, MenuModelRegistry, KeybindingContribution, 
-    KeybindingRegistry, CommandHandler, KeyCode, Key, Modifier } from "@theia/core/lib/common";
+import { CommandContribution, CommandRegistry, Command, MenuContribution, MenuModelRegistry, KeybindingContribution,
+    KeybindingRegistry, CommandHandler, MessageService } from "@theia/core/lib/common";
 import { WidgetManager, FrontendApplicationContribution, FrontendApplication } from '@theia/core/lib/browser';
 import { EDITOR_CONTEXT_MENU } from '@theia/editor/lib/browser';
 import { CallHierarchyService } from './callhierarchy-service';
 import { CallHierarchyTreeWidget } from './callhierarchy-tree/callhierarchy-tree-widget';
-import { MessageService } from "@theia/core/lib/common";
 import { CALLHIERARCHY_ID } from './callhierarchy'
 import { ActiveEditorAccess } from './active-editor-access';
 
@@ -48,9 +47,9 @@ export class CallHierarchyContribution implements CommandContribution, MenuContr
     protected async initCallHierarchyView(): Promise<void> {
         const hierarchyTreeWidget = await this.widgetFactory.getOrCreateWidget<CallHierarchyTreeWidget>(CALLHIERARCHY_ID);
         if (!hierarchyTreeWidget.isAttached) {
-            this.app.shell.addToMainArea(hierarchyTreeWidget);
+            this.app.shell.addWidget(hierarchyTreeWidget, { area: 'bottom' });
         }
-        this.app.shell.activateMain(hierarchyTreeWidget.id);
+        this.app.shell.activateWidget(hierarchyTreeWidget.id);
         // initialize new call hierarchy
         const selection = this.editorAccess.getSelection();
         const languageId = this.editorAccess.getLanguageId();
@@ -73,12 +72,8 @@ export class CallHierarchyContribution implements CommandContribution, MenuContr
 
     registerKeybindings(keybindings: KeybindingRegistry): void {
         keybindings.registerKeybinding({
-            commandId: CallhierarchyCommands.OPEN.id,
-            keyCode: KeyCode.createKeyCode({
-                first: Key.F1,
-                modifiers: [ Modifier.M2],
-            }),
-            accelerator: ['Shift F1'],
+            command: CallhierarchyCommands.OPEN.id,
+            keybinding: 'shift+F1'
         });
     }
 }

@@ -22,6 +22,10 @@ export class CallHierarchyTreeModel extends TreeModel {
         super(tree, services);
     }
 
+    getTree(): CallHierarchyTree {
+        return this.tree;
+    }
+
     async initializeCallHierarchy(languageId: string | undefined, location: Location | undefined): Promise<void> {
         this.tree.root = undefined;
         this.tree.callHierarchyService = undefined;

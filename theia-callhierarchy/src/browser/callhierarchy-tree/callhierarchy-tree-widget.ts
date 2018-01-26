@@ -138,4 +138,24 @@ export class CallHierarchyTreeWidget extends TreeWidget {
             });
         }
     }
-}
+
+    storeState(): object {
+        const callHierarchyService = this.model.getTree().callHierarchyService;
+        if (this.model.root && callHierarchyService) {
+            return {
+                root: this.deflateForStorage(this.model.root),
+                languageId: callHierarchyService.languageId,
+            };
+        } else {
+            return {};
+        }
+    }
+
+    restoreState(oldState: object): void {
+        // tslint:disable-next-line:no-any
+        if ((oldState as any).root && (oldState as any).languageId) {
+            // tslint:disable-next-line:no-any
+            this.model.root = this.inflateFromStorage((oldState as any).root);
+            this.model.initializeCallHierarchy((oldState as any).languageId, (this.model.root as DefinitionNode).definition.location);
+        }
+    }}

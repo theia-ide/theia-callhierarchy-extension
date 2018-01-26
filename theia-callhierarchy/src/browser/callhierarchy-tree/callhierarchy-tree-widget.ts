@@ -17,7 +17,6 @@ import { DefinitionNode, CallerNode } from "./callhierarchy-tree";
 import { CallHierarchyTreeModel } from "./callhierarchy-tree-model";
 import { CALLHIERARCHY_ID, Definition, Caller } from "../callhierarchy";
 import URI from "@theia/core/lib/common/uri";
-import { ActiveEditorAccess } from "../active-editor-access";
 import { Location, Range } from 'vscode-languageserver-types';
 import { EditorManager } from "@theia/editor/lib/browser";
 
@@ -33,7 +32,6 @@ export class CallHierarchyTreeWidget extends TreeWidget {
         @inject(CallHierarchyTreeModel) readonly model: CallHierarchyTreeModel,
         @inject(ContextMenuRenderer) contextMenuRenderer: ContextMenuRenderer,
         @inject(LabelProvider) protected readonly labelProvider: LabelProvider,
-        @inject(ActiveEditorAccess) protected readonly editorAccess: ActiveEditorAccess,
         @inject(EditorManager) readonly editorManager: EditorManager,
     ) {
         super(props, model, contextMenuRenderer);
@@ -43,17 +41,18 @@ export class CallHierarchyTreeWidget extends TreeWidget {
         this.title.iconClass = 'fa fa-arrow-circle-down';
         this.title.closable = true;
         this.addClass(HIERARCHY_TREE_CLASS);
-        this.initializeModel();
-    }
-
-    protected initializeModel(): void {
         this.model.onSelectionChanged((node: Readonly<ISelectableTreeNode> | undefined) => {
-            if (node) 
+            if (node) {
                 this.openEditor(node, true);
+            }
         });
         this.model.onOpenNode((node: ITreeNode) => {
                 this.openEditor(node, false);
         });
+    }
+
+    initializeModel(selection: Location | undefined, languageId: string | undefined): void {
+        this.model.initializeCallHierarchy(languageId, selection);
     }
 
     protected createNodeClassNames(node: ITreeNode, props: NodeProps): string[] {

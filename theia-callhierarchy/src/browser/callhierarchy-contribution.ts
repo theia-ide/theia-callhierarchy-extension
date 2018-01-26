@@ -6,16 +6,17 @@
  */
 
 import { injectable, inject } from "inversify";
-import { CommandContribution, CommandRegistry, Command, MenuContribution, MenuModelRegistry, KeybindingContribution,
-    KeybindingRegistry, CommandHandler, MessageService } from "@theia/core/lib/common";
-import { WidgetManager, FrontendApplicationContribution, FrontendApplication } from '@theia/core/lib/browser';
+import { MenuModelRegistry, Command, CommandRegistry } from "@theia/core/lib/common";
+import { FrontendApplication, AbstractViewContribution, OpenViewArguments } from '@theia/core/lib/browser';
 import { EDITOR_CONTEXT_MENU } from '@theia/editor/lib/browser';
-import { CallHierarchyService } from './callhierarchy-service';
 import { CallHierarchyTreeWidget } from './callhierarchy-tree/callhierarchy-tree-widget';
-import { CALLHIERARCHY_ID } from './callhierarchy'
+import { CALLHIERARCHY_ID } from './callhierarchy';
 import { ActiveEditorAccess } from './active-editor-access';
 
-export namespace CallhierarchyCommands {
+export const CALL_HIERARCHY_TOGGLE_COMMAND_ID = 'callhierachy:toggle';
+export const CALL_HIERARCHY_LABEL = 'Call hierarchy';
+
+export namespace CallHierarchyCommands {
     export const OPEN: Command = {
         id: 'callhierarchy:open',
         label: 'Open Call Hierarchy'
@@ -23,37 +24,22 @@ export namespace CallhierarchyCommands {
 }
 
 @injectable()
-export class CallHierarchyContribution implements CommandContribution, MenuContribution, KeybindingContribution, FrontendApplicationContribution {
+export class CallHierarchyContribution extends  AbstractViewContribution<CallHierarchyTreeWidget> {
 
-    constructor(
-        @inject(FrontendApplication) protected readonly app: FrontendApplication,
-        @inject(CallHierarchyService) protected readonly callHierarchyService: CallHierarchyService,
-        @inject(MessageService) protected readonly messageService: MessageService,
-        @inject(WidgetManager) protected readonly widgetFactory: WidgetManager,
-        @inject(ActiveEditorAccess) protected readonly editorAccess: ActiveEditorAccess,
-    ) { }
-
-    initializeLayout(app: FrontendApplication) {
-        // TODO add status bar item
-    }
-
-    registerCommands(registry: CommandRegistry): void {
-        registry.registerCommand(CallhierarchyCommands.OPEN, <CommandHandler> {
-            execute: () => this.initCallHierarchyView(),
-            isEnabled: () => this.isCallHierarchyAvailable(),
+    constructor(@inject(ActiveEditorAccess) protected readonly editorAccess: ActiveEditorAccess) {
+        super({
+            widgetId: CALLHIERARCHY_ID,
+            widgetName: CALL_HIERARCHY_LABEL,
+            defaultWidgetOptions: {
+                area: 'bottom'
+            },
+            toggleCommandId: CALL_HIERARCHY_TOGGLE_COMMAND_ID,
+            toggleKeybinding: 'shift+f1'
         });
     }
 
-    protected async initCallHierarchyView(): Promise<void> {
-        const hierarchyTreeWidget = await this.widgetFactory.getOrCreateWidget<CallHierarchyTreeWidget>(CALLHIERARCHY_ID);
-        if (!hierarchyTreeWidget.isAttached) {
-            this.app.shell.addWidget(hierarchyTreeWidget, { area: 'bottom' });
-        }
-        this.app.shell.activateWidget(hierarchyTreeWidget.id);
-        // initialize new call hierarchy
-        const selection = this.editorAccess.getSelection();
-        const languageId = this.editorAccess.getLanguageId();
-        hierarchyTreeWidget.model.initializeCallHierarchy(languageId, selection);
+    initializeLayout(app: FrontendApplication) {
+        // TODO add status bar item
     }
 
     protected isCallHierarchyAvailable(): boolean {
@@ -62,18 +48,31 @@ export class CallHierarchyContribution implements CommandContribution, MenuContr
         return !!selection && !!languageId;
     }
 
+    async openView(args?: Partial<OpenViewArguments>): Promise<CallHierarchyTreeWidget> {
+        const widget = await super.openView(args);
+        const selection = this.editorAccess.getSelection();
+        const languageId = this.editorAccess.getLanguageId();
+        widget.initializeModel(selection, languageId);
+        return widget;
+    }
+
+    registerCommands(commands: CommandRegistry): void {
+        commands.registerCommand(CallHierarchyCommands.OPEN, {
+            execute: () => this.openView({
+                toggle: false,
+                activate: true
+            }),
+            isEnabled: this.isCallHierarchyAvailable.bind(this)
+        });
+        super.registerCommands(commands);
+    }
+
     registerMenus(menus: MenuModelRegistry): void {
         const menuPath = [...EDITOR_CONTEXT_MENU, 'navigation'];
         menus.registerMenuAction(menuPath, {
-            commandId: CallhierarchyCommands.OPEN.id,
-            label: CallhierarchyCommands.OPEN.label,
+            commandId: CallHierarchyCommands.OPEN.id,
+            label: CALL_HIERARCHY_LABEL
         });
-    }
-
-    registerKeybindings(keybindings: KeybindingRegistry): void {
-        keybindings.registerKeybinding({
-            command: CallhierarchyCommands.OPEN.id,
-            keybinding: 'shift+F1'
-        });
+        super.registerMenus(menus);
     }
 }

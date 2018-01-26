@@ -9,7 +9,7 @@ import { injectable, inject } from "inversify";
 import { Message } from "@phosphor/messaging";
 import {
     ContextMenuRenderer, TreeWidget, NodeProps, TreeProps, ITreeNode,
-    ISelectableTreeNode, ITreeModel
+    ISelectableTreeNode, ITreeModel, DockPanel
 } from "@theia/core/lib/browser";
 import { ElementAttrs, h } from "@phosphor/virtualdom";
 import { LabelProvider } from "@theia/core/lib/browser/label-provider";
@@ -17,6 +17,9 @@ import { DefinitionNode, CallerNode } from "./callhierarchy-tree";
 import { CallHierarchyTreeModel } from "./callhierarchy-tree-model";
 import { CALLHIERARCHY_ID, Definition, Caller } from "../callhierarchy";
 import URI from "@theia/core/lib/common/uri";
+import { ActiveEditorAccess } from "../active-editor-access";
+import { Location, Range } from 'vscode-languageserver-types';
+import { EditorManager } from "@theia/editor/lib/browser";
 
 export const HIERARCHY_TREE_CLASS = 'theia-CallHierarchyTree';
 export const DEFINITION_NODE_CLASS = 'theia-CallHierarchyTreeNode';
@@ -30,6 +33,8 @@ export class CallHierarchyTreeWidget extends TreeWidget {
         @inject(CallHierarchyTreeModel) readonly model: CallHierarchyTreeModel,
         @inject(ContextMenuRenderer) contextMenuRenderer: ContextMenuRenderer,
         @inject(LabelProvider) protected readonly labelProvider: LabelProvider,
+        @inject(ActiveEditorAccess) protected readonly editorAccess: ActiveEditorAccess,
+        @inject(EditorManager) readonly editorManager: EditorManager,
     ) {
         super(props, model, contextMenuRenderer);
 
@@ -38,6 +43,17 @@ export class CallHierarchyTreeWidget extends TreeWidget {
         this.title.iconClass = 'fa fa-arrow-circle-down';
         this.title.closable = true;
         this.addClass(HIERARCHY_TREE_CLASS);
+        this.initializeModel();
+    }
+
+    protected initializeModel(): void {
+        this.model.onSelectionChanged((node: Readonly<ISelectableTreeNode> | undefined) => {
+            if (node) 
+                this.openEditor(node, true);
+        });
+        this.model.onOpenNode((node: ITreeNode) => {
+                this.openEditor(node, false);
+        });
     }
 
     protected createNodeClassNames(node: ITreeNode, props: NodeProps): string[] {
@@ -102,4 +118,25 @@ export class CallHierarchyTreeWidget extends TreeWidget {
         return h.div({ className: 'definitionNode' }, icon, symbolElement, referenceCountElement, containerElement);
     }
 
+    private openEditor(node: ITreeNode, keepFocus: boolean) {
+        let location: Location | undefined;
+        if (DefinitionNode.is(node)) {
+            location = node.definition.location;
+        }
+        if (CallerNode.is(node)) {
+            location = node.caller.references[0];
+        }
+        if (location) {
+            this.editorManager.open(
+                new URI(location.uri), { 
+                    revealIfVisible: !keepFocus,
+                    selection: Range.create(location.range.start, location.range.start)
+                }
+            ).then(editorWidget => {
+                if (editorWidget.parent instanceof DockPanel) {
+                    editorWidget.parent.selectWidget(editorWidget)
+                }
+            });
+        }
+    }
 }

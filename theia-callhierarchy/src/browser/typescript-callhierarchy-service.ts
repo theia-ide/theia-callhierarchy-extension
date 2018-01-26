@@ -6,16 +6,15 @@
  */
 
 import { injectable, inject } from "inversify";
-import { LanguageClientProvider } from './language-client-provider';
-import { BaseCallHierarchyService } from "./base-callhierarchy-service";
+import { CallHierarchyServiceImpl, CallHierarchyServiceParams } from "./callhierarchy-service-impl";
 
 @injectable()
-export class TypeScriptCallHierarchyService extends BaseCallHierarchyService {
+export class TypeScriptCallHierarchyService extends CallHierarchyServiceImpl {
 
     readonly languageId: string = 'typescript';
 
-    constructor(@inject(LanguageClientProvider) protected readonly languageClientProvider: LanguageClientProvider) {
-        super(languageClientProvider);
+    constructor(@inject(CallHierarchyServiceParams) protected readonly params: CallHierarchyServiceParams) {
+        super(params);
     }
 }
 

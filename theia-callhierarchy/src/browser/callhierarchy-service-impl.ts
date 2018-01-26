@@ -16,13 +16,21 @@ import { LanguageClientProvider } from './language-client-provider';
 import { ILogger } from "@theia/core";
 
 @injectable()
-export abstract class BaseCallHierarchyService implements CallHierarchyService {
+export class CallHierarchyServiceParams {
+
+    constructor(
+        @inject(LanguageClientProvider) readonly languageClientProvider: LanguageClientProvider,
+        @inject(ILogger) readonly logger: ILogger) {
+    }
+}
+
+@injectable()
+export abstract class CallHierarchyServiceImpl implements CallHierarchyService {
 
     languageClient: ILanguageClient | undefined;
 
     constructor(
-        @inject(LanguageClientProvider) protected readonly languageClientProvider: LanguageClientProvider,
-        @inject(ILogger) protected readonly logger: ILogger) {
+        @inject(CallHierarchyServiceParams) protected readonly params: CallHierarchyServiceParams) {
     }
 
     abstract get languageId(): string;
@@ -73,9 +81,9 @@ export abstract class BaseCallHierarchyService implements CallHierarchyService {
     protected async getLanguageClient(): Promise<ILanguageClient | undefined> {
         if (!this.languageClient) {
             try {
-                this.languageClient = await this.languageClientProvider.getLanguageClient(this.languageId);
+                this.languageClient = await this.params.languageClientProvider.getLanguageClient(this.languageId);
             } catch (error) {
-                this.logger.error("Error getting language client", error);
+                this.params.logger.error("Error getting language client", error);
             }
         }
         return this.languageClient
@@ -92,7 +100,7 @@ export abstract class BaseCallHierarchyService implements CallHierarchyService {
                 return undefined;
             }
         } catch (error) {
-            this.logger.error(`Error from definitions request: ${uri}#${line}/${character}`, error);
+            this.params.logger.error(`Error from definitions request: ${uri}#${line}/${character}`, error);
         }
         const definitionLocation = Array.isArray(locations) ? locations[0] : locations;
         if (!definitionLocation) {
@@ -184,7 +192,7 @@ export abstract class BaseCallHierarchyService implements CallHierarchyService {
             const filteredReferences = utils.filterSame(uniqueReferences, definition);
             return filteredReferences;
         } catch (error) {
-            this.logger.error(`Error from references request`, error);
+            this.params.logger.error(`Error from references request`, error);
             return []
         }
     }

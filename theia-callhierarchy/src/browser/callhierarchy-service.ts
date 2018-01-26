@@ -11,6 +11,7 @@ import { Definition, Caller } from './callhierarchy'
 import { ContributionProvider } from '@theia/core/lib/common';
 
 export const CallHierarchyService = Symbol('CallHierarchyService');
+
 export interface CallHierarchyService {
     readonly languageId: string
     getRootDefinition(location: Location): Promise<Definition | undefined>

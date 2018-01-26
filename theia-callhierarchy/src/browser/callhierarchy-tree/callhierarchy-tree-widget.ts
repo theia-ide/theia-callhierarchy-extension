@@ -47,9 +47,6 @@ export class CallHierarchyTreeWidget extends TreeWidget {
     }
 
     protected initializeModel(): void {
-        const selection = this.editorAccess.getSelection();
-        const languageId = this.editorAccess.getLanguageId();
-        this.model.initializeCallHierarchy(languageId, selection);
         this.model.onSelectionChanged((node: Readonly<ISelectableTreeNode> | undefined) => {
             if (node) 
                 this.openEditor(node, true);

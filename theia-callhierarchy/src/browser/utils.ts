@@ -6,8 +6,7 @@
  */
 
 
-import { Range } from 'vscode-languageserver-types';
-import { SymbolInformation } from '@theia/languages/lib/browser';
+import { Location, Range } from 'vscode-languageserver-types';
 
 /**
  * Test if `otherRange` is in `range`. If the ranges are equal, will return true.
@@ -28,48 +27,29 @@ export function containsRange(range: Range, otherRange: Range): boolean {
     return true;
 }
 
-/**
- * A function that compares ranges, useful for sorting ranges
- * It will first compare ranges on the startPosition and then on the endPosition
- */
-export function compareRangesUsingStarts(a: Range, b: Range): number {
-    let aStartLine = a.start.line | 0;
-    let bStartLine = b.start.line | 0;
-
-    if (aStartLine === bStartLine) {
-        let aStartColumn = a.start.character | 0;
-        let bStartColumn = b.start.character | 0;
-
-        if (aStartColumn === bStartColumn) {
-            let aendline = a.end.line | 0;
-            let bendline = b.end.line | 0;
-
-            if (aendline === bendline) {
-                let aEndColumn = a.end.character | 0;
-                let bEndColumn = b.end.character | 0;
-                return aEndColumn - bEndColumn;
-            }
-            return aendline - bendline;
-        }
-        return aStartColumn - bStartColumn;
-    }
-    return aStartLine - bStartLine;
-}
-
-export function matchingStarts(a: Range, b: Range): boolean {
+function sameStart(a: Range, b: Range): boolean {
     const pos1 = a.start;
     const pos2 = b.start;
     return pos1.line == pos2.line
         && pos1.character == pos2.character;
 }
 
-export function getEnclosingSymbol(symbols: SymbolInformation[], range: Range): SymbolInformation | undefined {
-    const enclosingSymbols = symbols.filter(symbol => containsRange(symbol.location.range, range));
-    if (enclosingSymbols.length == 1) {
-        return enclosingSymbols[0];
-    }
-    const sortedEnclosingSymbols = enclosingSymbols.sort((a, b) => {
-        return compareRangesUsingStarts(a.location.range, b.location.range);
-    });
-    return sortedEnclosingSymbols[0];
+export function filterSame(locations: Location[], definition: Location): Location[] {
+    return locations.filter(candidate => candidate.uri != definition.uri
+        || !sameStart(candidate.range, definition.range)
+    );
 }
+
+export function filterUnique(locations: Location[]): Location[] {
+    const result: Location[] = [];
+    const set = new Set<string>();
+    for (const location of locations) {
+        const json = JSON.stringify(location);
+        if (!set.has(json)) {
+            set.add(json);
+            result.push(location);
+        }
+    }
+    return result;
+}
+

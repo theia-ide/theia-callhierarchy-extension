@@ -6,22 +6,49 @@
  */
 
 import { injectable, inject } from "inversify";
-import { TreeModel, TreeServices, ITreeNode, OpenerService, open, OpenerOptions } from "@theia/core/lib/browser";
+import { TreeModel, TreeServices, ISelectableTreeNode, ITreeNode, DockPanel } from "@theia/core/lib/browser";
 import { CallHierarchyTree, DefinitionNode, CallerNode } from "./callhierarchy-tree";
 import { CallHierarchyServiceProvider } from "../callhierarchy-service";
-import { Range, Location } from 'vscode-languageserver-types';
+import { Location } from 'vscode-languageserver-types';
 import URI from "@theia/core/lib/common/uri";
+import { EditorManager, Range } from "@theia/editor/lib/browser";
 
 @injectable()
 export class CallHierarchyTreeModel extends TreeModel {
 
     constructor(
-        @inject(OpenerService) readonly openerService: OpenerService,
+        @inject(EditorManager) readonly editorManager: EditorManager,
         @inject(CallHierarchyTree) protected readonly tree: CallHierarchyTree,
         @inject(TreeServices) services: TreeServices,
-        @inject(CallHierarchyServiceProvider) protected readonly callHierarchyServiceProvider: CallHierarchyServiceProvider
+        @inject(CallHierarchyServiceProvider) protected readonly callHierarchyServiceProvider: CallHierarchyServiceProvider,
     ) {
         super(tree, services);
+        this.onSelectionChanged((node: Readonly<ISelectableTreeNode> | undefined) => {
+            if (node) 
+                this.openEditor(node, true);
+        })
+    }
+    
+    private openEditor(node: ITreeNode, keepFocus: boolean) {
+        let location: Location | undefined;
+        if (DefinitionNode.is(node)) {
+            location = node.definition.location;
+        }
+        if (CallerNode.is(node)) {
+            location = node.caller.references[0];
+        }
+        if (location) {
+            this.editorManager.open(
+                new URI(location.uri), { 
+                    revealIfVisible: !keepFocus,
+                    selection: Range.create(location.range.start, location.range.start)
+                }
+            ).then(editorWidget => {
+                if (editorWidget.parent instanceof DockPanel) {
+                    editorWidget.parent.selectWidget(editorWidget)
+                }
+            });
+        }
     }
 
     async initializeCallHierarchy(languageId: string | undefined, location: Location | undefined): Promise<void> {
@@ -40,25 +67,8 @@ export class CallHierarchyTreeModel extends TreeModel {
         }
     }
 
-    protected doOpenNode(node: ITreeNode): void {
-        let location: Location | undefined;
-        if (DefinitionNode.is(node)) {
-            location = node.definition.location;
-        }
-        if (CallerNode.is(node)) {
-            location = node.caller.references[0];
-        }
-        if (location) {
-            open(
-                this.openerService,
-                new URI(location.uri),
-                <OpenerOptions> {
-                    selection: Range.create(location.range.start, location.range.start)
-                }
-            );
-        } else {
-            super.doOpenNode(node);
-        }
+    doOpenNode(node: ITreeNode): void {
+        this.openEditor(node, false);
+        super.doOpenNode(node)
     }
-
 }

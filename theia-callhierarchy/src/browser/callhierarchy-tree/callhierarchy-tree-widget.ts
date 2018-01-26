@@ -17,6 +17,7 @@ import { DefinitionNode, CallerNode } from "./callhierarchy-tree";
 import { CallHierarchyTreeModel } from "./callhierarchy-tree-model";
 import { CALLHIERARCHY_ID, Definition, Caller } from "../callhierarchy";
 import URI from "@theia/core/lib/common/uri";
+import { ActiveEditorAccess } from "../active-editor-access";
 
 export const HIERARCHY_TREE_CLASS = 'theia-CallHierarchyTree';
 export const DEFINITION_NODE_CLASS = 'theia-CallHierarchyTreeNode';
@@ -30,6 +31,7 @@ export class CallHierarchyTreeWidget extends TreeWidget {
         @inject(CallHierarchyTreeModel) readonly model: CallHierarchyTreeModel,
         @inject(ContextMenuRenderer) contextMenuRenderer: ContextMenuRenderer,
         @inject(LabelProvider) protected readonly labelProvider: LabelProvider,
+        @inject(ActiveEditorAccess) protected readonly editorAccess: ActiveEditorAccess,
     ) {
         super(props, model, contextMenuRenderer);
 
@@ -38,6 +40,10 @@ export class CallHierarchyTreeWidget extends TreeWidget {
         this.title.iconClass = 'fa fa-arrow-circle-down';
         this.title.closable = true;
         this.addClass(HIERARCHY_TREE_CLASS);
+
+        const selection = this.editorAccess.getSelection();
+        const languageId = this.editorAccess.getLanguageId();
+        this.model.initializeCallHierarchy(languageId, selection);
     }
 
     protected createNodeClassNames(node: ITreeNode, props: NodeProps): string[] {

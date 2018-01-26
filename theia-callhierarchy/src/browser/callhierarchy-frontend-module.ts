@@ -11,9 +11,10 @@ import { TypeScriptCallHierarchyService } from "./typescript-callhierarchy-servi
 import { CallHierarchyService, CallHierarchyServiceProvider } from "./callhierarchy-service"
 import { WidgetFactory } from '@theia/core/lib/browser';
 import { CALLHIERARCHY_ID } from './callhierarchy';
-import { CallHierarchyTreeWidget, createHierarchyTreeWidget } from './callhierarchy-tree';
+import { createHierarchyTreeWidget } from './callhierarchy-tree';
 import { ActiveEditorAccess } from './active-editor-access';
-import { LanguageClientProvider } from './languageclient-provider';
+import { LanguageClientProvider } from './language-client-provider';
+import { LanguageClientProviderImpl } from './language-client-provider-impl';
 
 import { ContainerModule } from "inversify";
 
@@ -21,7 +22,8 @@ import '../../src/browser/style/index.css';
 
 export default new ContainerModule(bind => {
     bind(ActiveEditorAccess).toSelf().inSingletonScope();
-    bind(LanguageClientProvider).toSelf().inSingletonScope();
+    bind(LanguageClientProviderImpl).toSelf().inSingletonScope();
+    bind(LanguageClientProvider).toDynamicValue(ctx => ctx.container.get(LanguageClientProviderImpl)).inSingletonScope();
 
     bindContributionProvider(bind, CallHierarchyService);
     bind(TypeScriptCallHierarchyService).toSelf().inSingletonScope();
@@ -33,12 +35,8 @@ export default new ContainerModule(bind => {
     bind(MenuContribution).toDynamicValue(ctx => ctx.container.get(CallHierarchyContribution));
     bind(KeybindingContribution).toDynamicValue(ctx => ctx.container.get(CallHierarchyContribution));
 
-    bind(CallHierarchyTreeWidget).toDynamicValue(ctx =>
-        createHierarchyTreeWidget(ctx.container)
-    );
-
     bind(WidgetFactory).toDynamicValue(context => ({
         id: CALLHIERARCHY_ID,
-        createWidget: () => context.container.get<CallHierarchyTreeWidget>(CallHierarchyTreeWidget)
+        createWidget: () => createHierarchyTreeWidget(context.container)
     }));
 });

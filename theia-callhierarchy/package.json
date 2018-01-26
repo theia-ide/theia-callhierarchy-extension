@@ -10,27 +10,27 @@
     "src"
   ],
   "dependencies": {
-    "@theia/core": "^0.3.0",
-    "@theia/languages": "^0.3.1",
-    "@theia/editor": "^0.3.1",
+    "@theia/core": "next",
+    "@theia/languages": "next",
+    "@theia/editor": "next",
     "vscode-base-languageclient": "^0.0.1-alpha.3",
     "vscode-languageserver-types": "^3.4.0",
     "ts-md5": "^1.2.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.10",
+    "@types/chai": "^4.1.2",
     "@types/mocha": "^2.2.44",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
     "rimraf": "^2.6.2",
-    "ts-node": "^4.0.1",
-    "typescript": "latest"
+    "ts-node": "^4.1.0",
+    "typescript": "^2.6.2"
   },
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
-    "build": "tsc",
-    "watch": "tsc -w",
+    "build": "tsc -p compile.tsconfig.json",
+    "watch": "tsc -w -p compile.tsconfig.json",
     "test": "mocha -t 20000ms --require ts-node/register --require reflect-metadata/Reflect --watch-extensions ts \"./src/**/*.*spec.ts\""
   },
   "theiaExtensions": [

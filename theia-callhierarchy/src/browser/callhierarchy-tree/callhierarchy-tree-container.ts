@@ -11,7 +11,7 @@ import { CallHierarchyTree } from "./callhierarchy-tree";
 import { CallHierarchyTreeModel } from './callhierarchy-tree-model';
 import { CallHierarchyTreeWidget } from "./callhierarchy-tree-widget";
 
-export function createHierarchyTreeContainer(parent: interfaces.Container): Container {
+function createHierarchyTreeContainer(parent: interfaces.Container): Container {
     const child = createTreeContainer(parent);
 
     child.unbind(Tree);
@@ -22,12 +22,12 @@ export function createHierarchyTreeContainer(parent: interfaces.Container): Cont
     child.bind(CallHierarchyTreeModel).toSelf();
     child.rebind(ITreeModel).toDynamicValue(ctx => ctx.container.get(CallHierarchyTreeModel));
 
-    child.unbind(TreeWidget);
     child.bind(CallHierarchyTreeWidget).toSelf();
+    child.rebind(TreeWidget).toDynamicValue(ctx => ctx.container.get(CallHierarchyTreeWidget));
 
     return child;
 }
 
 export function createHierarchyTreeWidget(parent: interfaces.Container): CallHierarchyTreeWidget {
-    return createHierarchyTreeContainer(parent).get(CallHierarchyTreeWidget);
+    return createHierarchyTreeContainer(parent).get<CallHierarchyTreeWidget>(CallHierarchyTreeWidget);
 }

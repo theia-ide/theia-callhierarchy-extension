@@ -26,7 +26,9 @@ export namespace CallHierarchyCommands {
 @injectable()
 export class CallHierarchyContribution extends  AbstractViewContribution<CallHierarchyTreeWidget> {
 
-    constructor(@inject(ActiveEditorAccess) protected readonly editorAccess: ActiveEditorAccess) {
+    @inject(ActiveEditorAccess) protected readonly editorAccess: ActiveEditorAccess;
+
+    constructor() {
         super({
             widgetId: CALLHIERARCHY_ID,
             widgetName: CALL_HIERARCHY_LABEL,

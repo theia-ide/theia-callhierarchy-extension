@@ -14,10 +14,8 @@ import { LanguageClientProvider } from './language-client-provider';
 @injectable()
 export class LanguageClientProviderImpl implements LanguageClientProvider {
 
-    constructor(
-        @inject(ContributionProvider) @named(LanguageClientContribution)
-        private readonly contributions: ContributionProvider<LanguageClientContribution>,
-    ) { }
+    @inject(ContributionProvider)@named(LanguageClientContribution)
+    private readonly contributions: ContributionProvider<LanguageClientContribution>;
 
     async getLanguageClient(languageId: string): Promise<ILanguageClient | undefined> {
         const contribution = this.getLanguageContribution(languageId);

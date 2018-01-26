@@ -21,10 +21,8 @@ export interface CallHierarchyService {
 @injectable()
 export class CallHierarchyServiceProvider {
 
-    constructor(
-        @inject(ContributionProvider) @named(CallHierarchyService)
-        protected readonly contributions: ContributionProvider<CallHierarchyService>,
-    ) {}
+    @inject(ContributionProvider)@named(CallHierarchyService)
+    protected readonly contributions: ContributionProvider<CallHierarchyService>;
 
     get(languageId: string): CallHierarchyService | undefined {
         return this.contributions.getContributions().find(service => languageId === service.languageId);

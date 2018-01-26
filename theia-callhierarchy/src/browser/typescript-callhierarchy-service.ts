@@ -5,15 +5,12 @@
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import { injectable, inject } from "inversify";
-import { CallHierarchyServiceImpl, CallHierarchyServiceParams } from "./callhierarchy-service-impl";
+import { injectable } from "inversify";
+import { CallHierarchyServiceImpl } from "./callhierarchy-service-impl";
 
 @injectable()
 export class TypeScriptCallHierarchyService extends CallHierarchyServiceImpl {
 
     readonly languageId: string = 'typescript';
 
-    constructor(@inject(CallHierarchyServiceParams) protected readonly params: CallHierarchyServiceParams) {
-        super(params);
-    }
 }

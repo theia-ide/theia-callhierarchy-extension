@@ -12,9 +12,7 @@ import { Location } from 'vscode-languageserver-types';
 @injectable()
 export class ActiveEditorAccess {
 
-    constructor(
-        @inject(EditorManager) protected readonly editorManager: EditorManager,
-    ) { }
+    @inject(EditorManager) protected readonly editorManager: EditorManager;
 
     getSelection(): Location | undefined {
         const activeEditor = this.getActiveEditor();

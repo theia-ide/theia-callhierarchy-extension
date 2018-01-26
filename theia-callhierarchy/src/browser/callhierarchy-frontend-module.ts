@@ -15,7 +15,6 @@ import { createHierarchyTreeWidget } from './callhierarchy-tree';
 import { ActiveEditorAccess } from './active-editor-access';
 import { LanguageClientProvider } from './language-client-provider';
 import { LanguageClientProviderImpl } from './language-client-provider-impl';
-import { CallHierarchyServiceParams } from './callhierarchy-service-impl';
 
 import { ContainerModule } from "inversify";
 
@@ -30,7 +29,6 @@ export default new ContainerModule(bind => {
     bind(TypeScriptCallHierarchyService).toSelf().inSingletonScope();
     bind(CallHierarchyService).toDynamicValue(ctx => ctx.container.get(TypeScriptCallHierarchyService)).inSingletonScope();
     bind(CallHierarchyServiceProvider).to(CallHierarchyServiceProvider).inSingletonScope();
-    bind(CallHierarchyServiceParams).toSelf().inSingletonScope();
 
     bind(CallHierarchyContribution).toSelf().inSingletonScope();
     bind(CommandContribution).toDynamicValue(ctx => ctx.container.get(CallHierarchyContribution));

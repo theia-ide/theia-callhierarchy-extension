@@ -56,3 +56,41 @@ describe('TypeScript call hierarchy service', () => {
         expect(callers[1].references[0].uri).to.be.equal('file:///foo.ts');
     });
 });
+
+/* foo.ts
+import { B } from './bar'
+import { Z } from './zzz'
+
+export class F {
+
+    foo() {
+        const b = new B();
+        b.bar();
+        const z = new Z();
+        z.xy();
+        z.xy();
+    }
+}
+*/
+
+/* bar.ts
+import { Z } from './zzz'
+
+export class B {
+
+    bar() {
+        const z = new Z();
+        z.xy();
+    }
+}
+*/
+
+/* zzz.ts
+
+export class Z {
+
+    xy() {
+
+    }
+}
+*/

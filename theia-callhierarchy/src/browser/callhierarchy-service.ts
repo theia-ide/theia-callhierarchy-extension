@@ -7,7 +7,7 @@
 
 import { injectable, inject, named } from "inversify";
 import { Location } from 'vscode-languageserver-types';
-import { Definition, Caller } from './callhierarchy'
+import { Definition, Caller } from './callhierarchy';
 import { ContributionProvider } from '@theia/core/lib/common';
 
 export const CallHierarchyService = Symbol('CallHierarchyService');
@@ -27,6 +27,6 @@ export class CallHierarchyServiceProvider {
     ) {}
 
     get(languageId: string): CallHierarchyService | undefined {
-        return this.contributions.getContributions().find(service => languageId == service.languageId);
+        return this.contributions.getContributions().find(service => languageId === service.languageId);
     }
 }

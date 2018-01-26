@@ -5,7 +5,6 @@
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
-
 import { Location, Range } from 'vscode-languageserver-types';
 
 /**
@@ -30,12 +29,12 @@ export function containsRange(range: Range, otherRange: Range): boolean {
 function sameStart(a: Range, b: Range): boolean {
     const pos1 = a.start;
     const pos2 = b.start;
-    return pos1.line == pos2.line
-        && pos1.character == pos2.character;
+    return pos1.line === pos2.line
+        && pos1.character === pos2.character;
 }
 
 export function filterSame(locations: Location[], definition: Location): Location[] {
-    return locations.filter(candidate => candidate.uri != definition.uri
+    return locations.filter(candidate => candidate.uri !== definition.uri
         || !sameStart(candidate.range, definition.range)
     );
 }
@@ -52,4 +51,3 @@ export function filterUnique(locations: Location[]): Location[] {
     }
     return result;
 }
-

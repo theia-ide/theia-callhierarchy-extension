@@ -127,13 +127,13 @@ export class CallHierarchyTreeWidget extends TreeWidget {
         }
         if (location) {
             this.editorManager.open(
-                new URI(location.uri), { 
+                new URI(location.uri), {
                     revealIfVisible: !keepFocus,
                     selection: Range.create(location.range.start, location.range.start)
                 }
             ).then(editorWidget => {
                 if (editorWidget.parent instanceof DockPanel) {
-                    editorWidget.parent.selectWidget(editorWidget)
+                    editorWidget.parent.selectWidget(editorWidget);
                 }
             });
         }

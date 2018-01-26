@@ -48,7 +48,7 @@ export abstract class CallHierarchyServiceImpl implements CallHierarchyService {
             case SymbolKind.Property:
             case SymbolKind.Variable:
                 return true;
-            default: 
+            default:
                 return false;
         }
     }
@@ -58,8 +58,9 @@ export abstract class CallHierarchyServiceImpl implements CallHierarchyService {
      */
     public async getRootDefinition(location: Location): Promise<Definition | undefined> {
         const languageClient = await this.getLanguageClient();
-        if (!languageClient) 
-            return
+        if (!languageClient) {
+            return;
+        }
         const uri = location.uri;
         const { line, character } = location.range.start;
         return this.findRootDefinition(languageClient, uri, line, character);
@@ -70,8 +71,9 @@ export abstract class CallHierarchyServiceImpl implements CallHierarchyService {
      */
     public async getCallers(definition: Definition): Promise<Caller[] | undefined> {
         const languageClient = await this.getLanguageClient();
-        if (!languageClient) 
-            return
+        if (!languageClient) {
+            return;
+        }
         const callerReferences = await this.getCallerReferences(languageClient, definition.location);
         const allMethodSymbols = await this.getAllCallableSymbols(languageClient, callerReferences);
         const callers = this.createCallers(callerReferences, allMethodSymbols);
@@ -86,7 +88,7 @@ export abstract class CallHierarchyServiceImpl implements CallHierarchyService {
                 this.params.logger.error("Error getting language client", error);
             }
         }
-        return this.languageClient
+        return this.languageClient;
     }
 
     protected async findRootDefinition(languageClient: ILanguageClient, uri: string, line: number, character: number): Promise<Definition | undefined> {
@@ -95,7 +97,7 @@ export abstract class CallHierarchyServiceImpl implements CallHierarchyService {
             locations = await languageClient.sendRequest(DefinitionRequest.type, <TextDocumentPositionParams>{
                 position: Position.create(line, character),
                 textDocument: { uri }
-            })
+            });
             if (!locations) {
                 return undefined;
             }
@@ -193,7 +195,7 @@ export abstract class CallHierarchyServiceImpl implements CallHierarchyService {
             return filteredReferences;
         } catch (error) {
             this.params.logger.error(`Error from references request`, error);
-            return []
+            return [];
         }
     }
 
@@ -203,43 +205,46 @@ export abstract class CallHierarchyServiceImpl implements CallHierarchyService {
     protected getEnclosingSymbol(symbols: SymbolInformation[], definition: Range): SymbolInformation | undefined {
         let bestMatch: SymbolInformation | undefined = undefined;
         let bestRange: Range | undefined = undefined;
-        for(let candidate of symbols) {
-            const candidateRange = candidate.location.range
-            if(utils.containsRange(candidateRange, definition)) {
+        for (let candidate of symbols) {
+            const candidateRange = candidate.location.range;
+            if (utils.containsRange(candidateRange, definition)) {
                 if (!bestMatch || this.isBetter(candidateRange, bestRange!)) {
                     bestMatch = candidate;
                     bestRange = candidateRange;
-                } 
+                }
             }
         }
         return bestMatch;
     }
-    
+
     /**
-     * Evaluation function for enclosing regions. 
+     * Evaluation function for enclosing regions.
      * As symbols can be nested, we are looking for the one with the smallest region.
-     * As we only check regions that contain the definition, that is the one with the 
+     * As we only check regions that contain the definition, that is the one with the
      * latest start position.
-     * The TS language server returns two symbols for a method: One spanning the name 
-     * and one spanning the entire method including the body. We are only interested 
+     * The TS language server returns two symbols for a method: One spanning the name
+     * and one spanning the entire method including the body. We are only interested
      * in the latter. So if two regions start at the same position the longer one wins
      */
     protected isBetter(a: Range, b: Range) {
-        if (a.start.line > b.start.line) 
-            return true
+        if (a.start.line > b.start.line) {
+            return true;
+        }
         if (a.start.line === b.start.line) {
-            if (a.start.character > b.start.character)
-                return true
+            if (a.start.character > b.start.character) {
+                return true;
+            }
             if (a.start.character === b.start.character) {
-                if (a.end.line > b.end.line) 
-                    return true
+                if (a.end.line > b.end.line) {
+                    return true;
+                }
                 if (a.end.line === b.end.line) {
-                    if(a.end.character > b.end.character)
-                        return true
+                    if (a.end.character > b.end.character) {
+                        return true;
+                    }
                 }
             }
-        } 
-        return false
+        }
+        return false;
     }
 }
-

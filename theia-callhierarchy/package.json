@@ -4,6 +4,7 @@
   "keywords": [
     "theia-extension"
   ],
+  "license": "Apache-2.0",
   "version": "0.1.0",
   "files": [
     "lib",
@@ -24,13 +25,16 @@
     "mocha": "^4.0.1",
     "rimraf": "^2.6.2",
     "ts-node": "^4.1.0",
-    "typescript": "^2.6.2"
+    "typescript": "^2.6.2",
+    "tslint": "^5.9.1"
   },
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
-    "build": "tsc -p compile.tsconfig.json",
+    "build": "yarn compile && yarn lint",
+    "compile": "tsc -p compile.tsconfig.json",
     "watch": "tsc -w -p compile.tsconfig.json",
+    "lint": "tslint -c tslint.json --project compile.tsconfig.json",
     "test": "mocha -t 20000ms --require ts-node/register --require reflect-metadata/Reflect --watch-extensions ts \"./src/**/*.*spec.ts\""
   },
   "theiaExtensions": [

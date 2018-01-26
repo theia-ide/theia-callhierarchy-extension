@@ -7,8 +7,8 @@
 
 import { injectable } from "inversify";
 import { ILanguageClient } from '@theia/languages/lib/browser';
-import { getMockedLanguageClient } from './mock-language-client'
-import { LanguageClientProvider } from '../language-client-provider'
+import { getMockedLanguageClient } from './mock-language-client';
+import { LanguageClientProvider } from '../language-client-provider';
 
 @injectable()
 export class MockLanguageClientProvider implements LanguageClientProvider {

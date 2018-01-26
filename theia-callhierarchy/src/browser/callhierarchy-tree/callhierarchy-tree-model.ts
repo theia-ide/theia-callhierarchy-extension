@@ -21,7 +21,7 @@ export class CallHierarchyTreeModel extends TreeModel {
     ) {
         super(tree, services);
     }
-    
+
     async initializeCallHierarchy(languageId: string | undefined, location: Location | undefined): Promise<void> {
         this.tree.root = undefined;
         this.tree.callHierarchyService = undefined;
@@ -32,7 +32,7 @@ export class CallHierarchyTreeModel extends TreeModel {
                 const rootDefinition = await callHierarchyService.getRootDefinition(location);
                 if (rootDefinition) {
                     const rootNode = DefinitionNode.create(rootDefinition, undefined);
-                    this.tree.root = rootNode
+                    this.tree.root = rootNode;
                 }
             }
         }

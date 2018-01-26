@@ -1,6 +1,7 @@
 {
     "extends": "./config/base.tsconfig.json",
     "compilerOptions": {
+        "skipLibCheck": true,
         "baseUrl": ".",
         "paths": {
             "@theia/callhierarchy": [

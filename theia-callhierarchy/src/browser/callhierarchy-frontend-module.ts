@@ -7,8 +7,8 @@
 
 import { CallHierarchyContribution } from './callhierarchy-contribution';
 import { CommandContribution, MenuContribution, KeybindingContribution, bindContributionProvider } from "@theia/core/lib/common";
-import { TypeScriptCallHierarchyService } from "./typescript-callhierarchy-service"
-import { CallHierarchyService, CallHierarchyServiceProvider } from "./callhierarchy-service"
+import { TypeScriptCallHierarchyService } from "./typescript-callhierarchy-service";
+import { CallHierarchyService, CallHierarchyServiceProvider } from "./callhierarchy-service";
 import { WidgetFactory } from '@theia/core/lib/browser';
 import { CALLHIERARCHY_ID } from './callhierarchy';
 import { createHierarchyTreeWidget } from './callhierarchy-tree';

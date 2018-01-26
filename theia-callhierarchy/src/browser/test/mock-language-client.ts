@@ -12,7 +12,7 @@ import { ILanguageClient } from '@theia/languages/lib/browser';
 
 const recordedRequests = new Map<string, Thenable<any>>();
 
-function addRecordedRequest(parameters: any, result:any):void {
+function addRecordedRequest(parameters: any, result: any): void {
     recordedRequests.set(JSON.stringify(parameters), Promise.resolve(result));
 }
 
@@ -42,7 +42,6 @@ addRecordedRequest(
     ]
 );
 
-
 addRecordedRequest(
     [DocumentSymbolRequest.type, <DocumentSymbolParams>{
         "textDocument": { "uri": "file:///zzz.ts" }
@@ -65,7 +64,6 @@ addRecordedRequest(
         }
     ]
 );
-
 
 addRecordedRequest(
     [DocumentSymbolRequest.type, <DocumentSymbolParams>{
@@ -110,7 +108,6 @@ addRecordedRequest(
     ]
 );
 
-
 addRecordedRequest(
     [DocumentSymbolRequest.type, <DocumentSymbolParams>{
         "textDocument": { "uri": "file:///bar.ts" }
@@ -144,7 +141,6 @@ addRecordedRequest(
     ]
 );
 
-
 addRecordedRequest(
     [ReferencesRequest.type, <ReferenceParams>{
         "context": { "includeDeclaration": false },
@@ -173,7 +169,6 @@ addRecordedRequest(
     ]
 );
 
-
 addRecordedRequest(
     [ReferencesRequest.type, <ReferenceParams>{
         "context": { "includeDeclaration": false },
@@ -187,7 +182,6 @@ addRecordedRequest(
         }
     ]
 );
-
 
 addRecordedRequest(
     [ReferencesRequest.type, <ReferenceParams>{
@@ -217,12 +211,13 @@ const client = new base.BaseLanguageClient({
 
 client.sendRequest = function(): Thenable<any> {
     const args: any[] = [];
+    // tslint:disable-next-line:forin
     for (const i in arguments) {
         args.push(arguments[i]);
     }
     const result = recordedRequests.get(JSON.stringify(args));
     return result || Promise.reject(undefined);
-}
+};
 
 export function getMockedLanguageClient(): ILanguageClient {
     return client;

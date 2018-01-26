@@ -11,7 +11,6 @@ import { ITreeNode, ICompositeTreeNode, ISelectableTreeNode, IExpandableTreeNode
 import { Definition, Caller } from '../callhierarchy';
 import { CallHierarchyService } from '../callhierarchy-service';
 
-
 import { Md5 } from 'ts-md5/dist/md5';
 
 @injectable()
@@ -109,4 +108,3 @@ function createId(definition: Definition, parent: ITreeNode | undefined): string
     const id = idPrefix + Md5.hashStr(JSON.stringify(definition));
     return id;
 }
-

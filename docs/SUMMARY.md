@@ -1,12 +1,5 @@
-\# Summary
+# Summary
 
-
-
-\* \[Introduction\]\(README.md\)
-
-\* \[FooBar\]\(foobar.md\)
-
-
-
-
+* [Introduction](README.md)
+* [FooBar](foobar.md)
 
